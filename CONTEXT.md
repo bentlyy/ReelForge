@@ -2,9 +2,12 @@
 
 > Actualizado: 2026-05-09. Carpeta: `C:\Users\garay\OneDrive\Documentos\Proyectos\11_AutoYoutube\ReelEngine`
 > Objetivo: motor local para Shorts/Reels/vertical con dashboard web, bajo consumo, servicios externos gratuitos cuando sea posible, **sin modelos pesados**.
+> Repo: `https://github.com/bentlyy/ReelForge.git` (branch `main`, tracking `origin/main`).
 
 ## Estado actual
-**Fase 1: base implementada y verificada (backend/tests/build).** Smoke manual UI pendiente de confirmación del usuario.
+**Fase 1: base implementada y verificada (backend/tests/build).** Fase 2 **solo planificada** (`docs/PHASE2_PLAN.md`), no implementada.
+- Commits relevantes: `8e4ba4e` (Fase 1 foundation), `a483589` (ignore/untrack `*.tsbuildinfo`), `f48b053` (plan Fase 2).
+- **Pendiente del usuario:** smoke manual UI (checklist `docs/DEVELOPMENT.md`), ajuste Fase 1 (detalle no especificado), decisiones Fase 2 (worker A/B, proveedor por etapa, uso de ffmpeg existente/instalaciones futuras, manejo de secrets).
 
 ## Decisiones confirmadas
 - **D1=A**: `engines.node >=24` en `package.json`. *Entorno detectado al implementar*: Node **v22.15.0**, npm 11.21.1, git 2.47.1 → apareció `EBADENGINE`; recomendado actualizar a Node 24 LTS y reinstalar.
@@ -68,4 +71,4 @@ npm run build
 - **Decisiones previas Fase 2**: proveedor por etapa, si se instala FFmpeg/Piper/Whisper, worker in-process vs separado.
 
 ## Docs
-`README.md`, `docs/ARCHITECTURE.md`, `docs/DATABASE.md`, `docs/PIPELINE.md`, `docs/DEVELOPMENT.md`.
+`README.md`, `CONTEXT.md`, `docs/ARCHITECTURE.md`, `docs/DATABASE.md`, `docs/PIPELINE.md`, `docs/DEVELOPMENT.md`, `docs/PHASE2_PLAN.md` (plan, no implementado).
