@@ -1,0 +1,16 @@
+﻿node_modules/
+dist/
+build/
+.env
+.env.local
+.env.*.local
+storage/*
+!storage/.gitkeep
+*.db
+*.db-wal
+*.db-shm
+coverage/
+.vite/
+*.log
+.DS_Store
+Thumbs.db

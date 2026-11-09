@@ -1,0 +1,16 @@
+﻿{
+  "name": "reel-engine",
+  "private": true,
+  "version": "0.1.0",
+  "engines": { "node": ">=24" },
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev:api": "npm run dev -w @reel-engine/api",
+    "dev:dashboard": "npm run dev -w @reel-engine/dashboard",
+    "build": "npm run build -w @reel-engine/shared && npm run build -w @reel-engine/api && npm run build -w @reel-engine/dashboard",
+    "typecheck": "npm run typecheck -w @reel-engine/shared && npm run typecheck -w @reel-engine/api && npm run typecheck -w @reel-engine/dashboard",
+    "test": "npm run test -w @reel-engine/shared && npm run test -w @reel-engine/api",
+    "test:api": "npm run test -w @reel-engine/api",
+    "lint": "echo \"(no linter configured in Fase 1)\""
+  }
+}
