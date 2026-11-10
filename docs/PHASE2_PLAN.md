@@ -1,6 +1,6 @@
 # Phase 2 Plan (detailed) — core implemented, advanced adapters pending
 
-> Status: **core + provider-config UI implemented (2026-11-10)**: shared contracts, provider registry with `stub`/`manual`, SQLite queue, in-process opt-in worker (`WORKER_ENABLED`), sanitized storage paths, routes `POST /api/stages/:id/enqueue`, `GET /api/stages/:id/jobs`, `GET /api/jobs/:id`, `GET/PUT/DELETE /api/provider-configs`, dashboard page `/providers` (global/project scope), and manual asset registration (`GET/POST/DELETE /api/episodes/:episodeId/assets` + episode **Assets** panel). **Not implemented**: real `external_api`/`local_cli` adapters, ffmpeg detection/usage, Piper/Whisper, file uploads/browser picker, publishing, separate-process worker. No Docker/Redis/Postgres/n8n/ComfyUI/Whisper/Piper/AI models installed. Requires explicit user approval before adding providers or installing tools.
+> Status: **core + provider-config UI implemented (2026-11-10)**: shared contracts, provider registry with `stub`/`manual`, SQLite queue, in-process opt-in worker (`WORKER_ENABLED`), sanitized storage paths, routes `POST /api/stages/:id/enqueue`, `GET /api/stages/:id/jobs`, `GET /api/jobs/:id`, `GET/PUT/DELETE /api/provider-configs`, dashboard page `/providers` (global/project scope), manual asset registration (`GET/POST/DELETE /api/episodes/:episodeId/assets` + episode **Assets** panel), and per-stage queue/logs panel (`Encolar`, job status/attempts/error/lease/payload/result, stage events). **Not implemented**: real `external_api`/`local_cli` adapters, ffmpeg detection/usage, Piper/Whisper, file uploads/browser picker, publishing, separate-process worker. No Docker/Redis/Postgres/n8n/ComfyUI/Whisper/Piper/AI models installed. Requires explicit user approval before adding providers or installing tools.
 
 ## Goals
 - Plug real providers behind interfaces per pipeline stage, keep low resource usage.
@@ -64,7 +64,7 @@ Concurrency:
 
 ## 6) Dashboard additions
 - **Implemented**: provider config panel per project/stage (kind/enabled/timeout/attempts, no secrets) at `/providers`, backed by `/api/provider-configs`.
-- Job status/log tail (from `pipeline_jobs`/events), retry/cancel safe actions.
+- **Implemented**: per-stage job list/log tail (`GET /api/stages/:id/jobs`, status/attempts/error/lease/payload/result, events filtered by `metadata.stageId`) and safe `Encolar` action. A cross-episode queue view and live polling remain pending.
 - **Implemented**: asset list/register/delete in the episode detail (kind, stage, relative path, MIME, size). Preview is still pending; never load full large video into memory unnecessarily.
 
 ## 7) Tests required before calling ready

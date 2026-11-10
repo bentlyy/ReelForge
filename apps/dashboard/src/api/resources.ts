@@ -11,6 +11,7 @@ import type {
   StageProviderConfigUpdate,
   Asset,
   CreateAssetInput,
+  QueuedJob,
 } from "@reel-engine/shared";
 
 export const projectsApi = {
@@ -56,9 +57,16 @@ export const assetsApi = {
     }),
 };
 
+export const jobsApi = {
+  listByStage: (stageId: string) =>
+    apiFetch<ApiList<QueuedJob>>(`/stages/${stageId}/jobs`),
+  get: (jobId: string) => apiFetch<ApiItem<QueuedJob>>(`/jobs/${jobId}`),
+};
+
 export const pipelineApi = {
   runStub: (stageId: string) => apiFetch<ApiItem<PipelineStage>>(`/stages/${stageId}/run-stub`, { method: "POST" }),
   action: (stageId: string, action: string, note = "") => apiFetch<ApiItem<PipelineStage>>(`/stages/${stageId}/actions`, { method: "POST", body: JSON.stringify({ action, note }) }),
+  enqueue: (stageId: string) => apiFetch<ApiItem<QueuedJob>>(`/stages/${stageId}/enqueue`, { method: "POST" }),
   approvals: (stageId: string) => apiFetch<ApiList<Approval>>(`/approvals/stage/${stageId}`),
   history: (episodeId?: string) => apiFetch<ApiList<ActivityEvent>>(`/history${episodeId ? `?episodeId=${episodeId}` : ""}`),
 };

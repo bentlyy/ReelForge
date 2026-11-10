@@ -75,16 +75,16 @@ npm run build
 - **Cola**: enqueue solo desde `PENDING`/`FAILED`; idempotencia por `stageId:status:updatedAt`; cancelar etapa cancela su job activo; `FAILED` reportado por proveedor cuenta como fallo reintentable; historial con `projectId`.
 - **Rutas nuevas**: `POST /api/stages/:id/enqueue` (202), `GET /api/stages/:id/jobs`, `GET /api/jobs/:id`, `GET/PUT/DELETE /api/provider-configs` (scope global o `?projectId=`, con `effective` heredado).
 - **Assets**: `GET/POST/DELETE /api/episodes/:episodeId/assets`; solo registra archivos ya existentes bajo `episodes/<episodeId>/`, contenidos en `STORAGE_ROOT`; infiere MIME por extensión, guarda tamaño real y emite `asset.imported`/`asset.deleted`. `stageId` es opcional (nivel episodio).
-- **UI**: página **Proveedores** (`/providers`) con selector de ámbito, tabla de 7 etapas, edición (kind/enabled/configRef/timeout/intentos) y restablecer override; sin secretos en el frontend. Panel **Assets** en el detalle del episodio para registrar y eliminar archivos del storage local.
+- **UI**: página **Proveedores** (`/providers`) con selector de ámbito, tabla de 7 etapas, edición (kind/enabled/configRef/timeout/intentos) y restablecer override; sin secretos en el frontend. Panel **Assets** en el detalle del episodio para registrar y eliminar archivos del storage local. Cada etapa incluye **cola y logs**: botón `Encolar`, jobs (estado, intento/máximo, error, lease, payload/result) y eventos filtrados por `stageId`.
 - **Env**: `WORKER_ENABLED` (default `false`, boolean estricto), `WORKER_POLL_MS`, `WORKER_LEASE_MS`, `WORKER_CONCURRENCY` (default 1), `STORAGE_ROOT`. `.env` se carga desde `apps/api/` y la raíz del repo sin dependencias; `process.env` tiene prioridad; `DB_PATH`/`STORAGE_ROOT` relativos se resuelven contra la raíz del repo. Ver `.env.example`.
 - **Decisiones aplicadas**: worker A in-process opt-in; manual-first + stub; secrets solo en `.env`; ffmpeg solo se detectaría si existe (aún no usado); primer alcance = núcleo.
 - **Verificación**: `npm test` → 10 archivos, **40 tests passed**; `npm run typecheck` y `npm run build` OK.
-- **Smoke UI/API**: API+dashboard en vivo con DB temporal; `/providers` renderizó por DOM headless (título, 7 etapas, ámbito global); API real: override de proyecto `external_api`/9000ms efectivo y reset a `stub`. Assets: archivo real bajo `STORAGE_ROOT`, POST → 201 (`text/plain`, tamaño real), listado en DOM del detalle y DELETE → `removed:true`. Clics/visual fina no automatizados (Chrome sin remote debugging; el screenshot no es legible por el modelo).
+- **Smoke UI/API**: API+dashboard en vivo con DB temporal; `/providers` renderizó por DOM headless (título, 7 etapas, ámbito global); API real: override de proyecto `external_api`/9000ms efectivo y reset a `stub`. Assets: archivo real bajo `STORAGE_ROOT`, POST → 201 (`text/plain`, tamaño real), listado en DOM del detalle y DELETE → `removed:true`. Cola: `POST /stages/:id/enqueue` → job `PENDING` 0/3, `GET /stages/:id/jobs` → 1, evento `stage.enqueued`, y DOM del detalle con 7 botones «Ver cola y logs» y «Encolar». Clics/visual fina no automatizados (Chrome sin remote debugging; el screenshot no es legible por el modelo).
 - **Smoke en vivo (src y dist)**: `tsx src/server.ts` (puerto 4100) y `node dist/server.js` (4102, `.env` real, DB temporal); en ambos el worker procesó `POST /enqueue` → job `SUCCEEDED`, etapa `WAITING_APPROVAL`; en dist se aplicaron `001+002`; cancelar una etapa dejó su job en `CANCELLED`; sin errores en stderr.
 
 ## Fase 2 — no implementado aún
 - Proveedores reales `external_api` / `local_cli`; detección/uso de `ffmpeg`; Piper/Whisper.
-- Visor de logs/cola (la importación manual de assets ya existe, sin subida desde el navegador).
+- Visor global de cola/logs entre episodios (el panel por etapa ya existe); la importación manual de assets no sube archivos desde el navegador.
 - Publicación en YouTube/Instagram. Worker en proceso separado (opción B).
 
 ## Docs

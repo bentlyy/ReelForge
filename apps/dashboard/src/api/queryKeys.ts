@@ -7,4 +7,5 @@ export const qk = {
   providerConfigs: (projectId?: string | null) =>
     ["provider-configs", projectId || "global"] as const,
   assets: (episodeId: string) => ["assets", episodeId] as const,
+  stageJobs: (stageId: string) => ["stage-jobs", stageId] as const,
 };

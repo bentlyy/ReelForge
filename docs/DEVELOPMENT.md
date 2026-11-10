@@ -44,6 +44,7 @@ npm run build
 6. Progress bar/home indicators update; restart API and confirm data persists (SQLite `storage/reelengine.db`).
 7. Open `Proveedores`: switch Global/project scope, edit a stage (kind/timeout/attempts), save, verify the row; for a project override use Restablecer and confirm it inherits global again.
 8. Assets: place a real file at `storage/episodes/<episodeId>/script/hello.txt`, open the episode detail, `Importar asset` with the relative path, verify MIME/size and history, then `Eliminar` it. Expect 400 for missing files, paths outside `episodes/<episodeId>/` or another episode's stage.
+9. Queue/logs: with `WORKER_ENABLED=false`, press `Encolar` on a PENDING/FAILED stage, open `Ver cola y logs`, verify a PENDING job (attempt 0/max), `runAfter`, payload and the `stage.enqueued` event; press `Actualizar` after changing state. With `WORKER_ENABLED=true`, the same job reaches SUCCEEDED and the stage becomes WAITING_APPROVAL.
 
 ## Notes / constraints
 - API bound to localhost; no secrets in frontend/repo.
