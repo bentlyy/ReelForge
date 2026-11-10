@@ -6,6 +6,7 @@ import { episodesApi, pipelineApi } from "../api/resources";
 import { qk } from "../api/queryKeys";
 import { LoadingState, ErrorState } from "../components/States";
 import { StatusChip } from "../components/StatusChip";
+import { AssetsPanel } from "../components/AssetsPanel";
 import type { PipelineStage } from "@reel-engine/shared";
 
 function StageRow({ stage, onAction }: { stage: PipelineStage; onAction: (id:string,action:string)=>void }) {
@@ -51,6 +52,7 @@ export function EpisodeDetailPage() {
         <Paper sx={{p:2, mb:2}}><Stack direction="row" spacing={2} alignItems="center"><Typography variant="subtitle1">Estado episodio:</Typography><StatusChip status={ep.data.status}/><Box sx={{flex:1}}><LinearProgress variant="determinate" value={pct}/></Box><Typography variant="body2">{pct}%</Typography></Stack></Paper>
         <Stack spacing={1}>{stages.map((s: PipelineStage) => <StageRow key={s.id} stage={s} onAction={(stageId,action)=>act.mutate({stageId,action})}/>)}</Stack>
         {act.error && <Box sx={{mt:1}}><ErrorState message={(act.error as any).message}/></Box>}
+        <AssetsPanel episodeId={id!} stages={stages} />
       </Grid>
       <Grid size={{ xs: 12, md: 4 }}>
         <Paper sx={{p:2}}><Typography variant="h6" gutterBottom>Historial</Typography><Divider sx={{mb:1}}/>

@@ -1,5 +1,17 @@
 import { apiFetch } from "./client";
-import type { Project, Episode, PipelineStage, Approval, ActivityEvent, ApiList, ApiItem } from "@reel-engine/shared";
+import type {
+  Project,
+  Episode,
+  PipelineStage,
+  Approval,
+  ActivityEvent,
+  ApiList,
+  ApiItem,
+  ProviderConfigView,
+  StageProviderConfigUpdate,
+  Asset,
+  CreateAssetInput,
+} from "@reel-engine/shared";
 
 export const projectsApi = {
   list: () => apiFetch<ApiList<Project>>("/projects"),
@@ -13,6 +25,37 @@ export const episodesApi = {
   create: (body: any) => apiFetch<ApiItem<Episode & { stages: PipelineStage[] }>>("/episodes", { method: "POST", body: JSON.stringify(body) }),
   update: (id: string, body: any) => apiFetch<ApiItem<Episode & { stages: PipelineStage[] }>>(`/episodes/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
 };
+const scopeQuery = (projectId?: string | null) =>
+  projectId ? `?projectId=${encodeURIComponent(projectId)}` : "";
+
+export const providerConfigsApi = {
+  list: (projectId?: string | null) =>
+    apiFetch<ApiItem<ProviderConfigView>>(`/provider-configs${scopeQuery(projectId)}`),
+  upsert: (stageType: string, body: StageProviderConfigUpdate, projectId?: string | null) =>
+    apiFetch<ApiItem<unknown>>(`/provider-configs/${stageType}${scopeQuery(projectId)}`, {
+      method: "PUT",
+      body: JSON.stringify(body),
+    }),
+  remove: (stageType: string, projectId?: string | null) =>
+    apiFetch<ApiItem<{ removed: boolean }>>(
+      `/provider-configs/${stageType}${scopeQuery(projectId)}`,
+      { method: "DELETE" },
+    ),
+};
+
+export const assetsApi = {
+  list: (episodeId: string) => apiFetch<ApiList<Asset>>(`/episodes/${episodeId}/assets`),
+  create: (episodeId: string, body: CreateAssetInput) =>
+    apiFetch<ApiItem<Asset>>(`/episodes/${episodeId}/assets`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  remove: (episodeId: string, assetId: string) =>
+    apiFetch<ApiItem<{ removed: boolean }>>(`/episodes/${episodeId}/assets/${assetId}`, {
+      method: "DELETE",
+    }),
+};
+
 export const pipelineApi = {
   runStub: (stageId: string) => apiFetch<ApiItem<PipelineStage>>(`/stages/${stageId}/run-stub`, { method: "POST" }),
   action: (stageId: string, action: string, note = "") => apiFetch<ApiItem<PipelineStage>>(`/stages/${stageId}/actions`, { method: "POST", body: JSON.stringify({ action, note }) }),

@@ -28,13 +28,13 @@ Stage types/order: `SCRIPT, SCENE_PLANNING, IMAGE_GENERATION, VOICE_GENERATION, 
 `id (PK), stage_id (FK, CASCADE), decision (APPROVED|REJECTED), note, created_at`.
 
 ### assets
-`id (PK), episode_id (FK), stage_id (FK nullable), kind, relative_path, mime_type, size_bytes, created_at`. **Not written yet** (stub/manual providers do not produce files).
+`id (PK), episode_id (FK), stage_id (FK nullable), kind, relative_path, mime_type, size_bytes, created_at`. Written by manual import (`POST /api/episodes/:episodeId/assets`): the file must already exist under `storage/episodes/<episodeId>/` and be contained in `STORAGE_ROOT`; MIME is inferred from the extension unless provided, size comes from `stat`, and `stage_id` is optional (episode-level asset). Deletion removes only the row, never the file.
 
 ### activity_events
 `id, episode_id, project_id, event_type, message, metadata_json, created_at` — history/audit feed.
 
 ### provider_configs (Fase 2)
-`id (PK), project_id (FK projects, CASCADE, nullable = global), stage_type, provider_kind, enabled, config_ref, timeout_ms, max_attempts, created_at, updated_at` — unique scope `(COALESCE(project_id,'*'), stage_type)`. `config_ref` names an env var, **never a secret value**.
+`id (PK), project_id (FK projects, CASCADE, nullable = global), stage_type, provider_kind, enabled, config_ref, timeout_ms, max_attempts, created_at, updated_at` — unique scope `(COALESCE(project_id,'*'), stage_type)`. `config_ref` names an env var, **never a secret value**. Effective config = project row → global row → stub defaults (120s, 3 attempts, enabled).
 
 ### job_queue (Fase 2)
 `id (PK), stage_id (FK, CASCADE), episode_id (FK, CASCADE), stage_type, idempotency_key UNIQUE, status (PENDING|LEASED|RUNNING|SUCCEEDED|FAILED|CANCELLED), attempt, max_attempts, lease_owner, lease_expires_at, run_after, payload_json, result_json, error_code, error_message, created_at, updated_at` — indexes on `(status, run_after)`, `stage_id`, `(status, lease_expires_at)`.

@@ -12,11 +12,18 @@ import { _resetRateLimitForTests } from "../middleware/rateLimit.js";
 
 export let app: Express;
 export let db: Db;
+export let storageRoot: string;
 let tmpDir: string;
 
 beforeAll(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "reelengine-"));
-  const env = loadEnv({ NODE_ENV: "test", DB_PATH: path.join(tmpDir, "test.db"), LOG_LEVEL: "silent" });
+  const env = loadEnv({
+    NODE_ENV: "test",
+    DB_PATH: path.join(tmpDir, "test.db"),
+    STORAGE_ROOT: path.join(tmpDir, "storage"),
+    LOG_LEVEL: "silent",
+  });
+  storageRoot = env.storageRoot;
   db = openDb(env);
   migrate(db);
   app = createApp(env, db).app;

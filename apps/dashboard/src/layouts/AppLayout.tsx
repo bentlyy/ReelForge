@@ -3,6 +3,7 @@ import { Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Toolbar,
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import FolderIcon from "@mui/icons-material/Folder";
 import MovieIcon from "@mui/icons-material/Movie";
+import SettingsIcon from "@mui/icons-material/Settings";
 import Brightness6Icon from "@mui/icons-material/Brightness6";
 import { Link, useLocation } from "react-router-dom";
 import { ColorModeContext } from "../theme";
@@ -12,6 +13,7 @@ const items = [
   { to: "/", label: "Inicio", icon: <DashboardIcon /> },
   { to: "/projects", label: "Proyectos", icon: <FolderIcon /> },
   { to: "/episodes", label: "Episodios", icon: <MovieIcon /> },
+  { to: "/providers", label: "Proveedores", icon: <SettingsIcon /> },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {

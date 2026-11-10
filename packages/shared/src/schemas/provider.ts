@@ -54,7 +54,12 @@ export const jobResultSchema = z
   })
   .strict();
 
+export const stageProviderConfigUpdateSchema = stageProviderConfigSchema
+  .omit({ stageType: true })
+  .strict();
+
 export type StageProviderConfigInput = z.input<typeof stageProviderConfigSchema>;
 export type StageProviderConfig = z.output<typeof stageProviderConfigSchema>;
+export type StageProviderConfigUpdate = z.output<typeof stageProviderConfigUpdateSchema>;
 export type AssetRef = z.infer<typeof assetRefSchema>;
 export type JobResult = z.infer<typeof jobResultSchema>;

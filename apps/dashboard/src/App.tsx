@@ -6,6 +6,7 @@ import { ProjectFormPage } from "./pages/ProjectFormPage";
 import { EpisodesPage } from "./pages/EpisodesPage";
 import { EpisodeFormPage } from "./pages/EpisodeFormPage";
 import { EpisodeDetailPage } from "./pages/EpisodeDetailPage";
+import { ProvidersPage } from "./pages/ProvidersPage";
 
 export function App() {
   return (
@@ -19,6 +20,7 @@ export function App() {
         <Route path="/episodes/new" element={<EpisodeFormPage />} />
         <Route path="/episodes/:id" element={<EpisodeDetailPage />} />
         <Route path="/episodes/:id/edit" element={<EpisodeFormPage />} />
+        <Route path="/providers" element={<ProvidersPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppLayout>

@@ -36,8 +36,20 @@ No heavy processes/providers. `POST /api/stages/:id/run-stub` (and `action=start
 - Cancelling a stage cancels its active job; late provider results for cancelled jobs are discarded (`complete`/`fail` only apply to `LEASED`/`RUNNING`).
 - Default `stub` result → stage `WAITING_APPROVAL`, reusing the same approval/retry model.
 
+## Provider configuration (`provider_configs`)
+- `GET /api/provider-configs` returns global scope (`projectId: null`); `?projectId=<id>` returns a project scope plus `effective` for all 7 stages.
+- `PUT /api/provider-configs/:stageType[?projectId=]` upserts `{ providerKind, enabled, configRef, timeoutMs, maxAttempts }`; `DELETE` removes the scope row (reset).
+- Resolution: project override → global config → stub defaults (120s, 3 attempts). `enabled=false` forces stub. `configRef` is an env var **name** validated as `^[A-Z][A-Z0-9_]{0,80}$`; secrets never enter the DB/UI.
+- Dashboard page `/providers` edits the same data by scope; the API returns both the explicit scope rows and the resolved `effective` rows so the UI can show "Override"/"Heredado".
+
 ## Episode status sync
 Derived after stage changes: any RUNNING → RUNNING; any WAITING_APPROVAL → WAITING_APPROVAL; any FAILED → FAILED; any CANCELLED → CANCELLED; all COMPLETED → COMPLETED; else PENDING.
 
+## Assets (manual import)
+- `GET /api/episodes/:episodeId/assets`, `POST /api/episodes/:episodeId/assets`, `DELETE /api/episodes/:episodeId/assets/:assetId`.
+- `POST` body: `{ kind, relativePath, stageId?, mimeType? }`; `relativePath` is relative to `STORAGE_ROOT` and must start with `episodes/<episodeId>/`, be contained, and point to an existing file. Optional `stageId` must belong to the same episode.
+- `kind` ∈ `image|audio|subtitle|video|manifest|other`; MIME is inferred from the extension when omitted; `sizeBytes` comes from `stat`; history emits `asset.imported`/`asset.deleted`.
+- The dashboard **Assets** panel registers/deletes these rows; files are placed on disk manually, never uploaded by the browser.
+
 ## Future (not implemented)
-Real `external_api` / `local_cli` adapters; FFmpeg detection/usage; Piper/Whisper; artifact generation into `storage/`; provider-config and media-import UI; publishing; separate-process worker.
+Real `external_api` / `local_cli` adapters; FFmpeg detection/usage; Piper/Whisper; automatic artifact generation into `storage/`; publishing; separate-process worker.

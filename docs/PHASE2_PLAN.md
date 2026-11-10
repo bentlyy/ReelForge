@@ -1,6 +1,6 @@
 # Phase 2 Plan (detailed) — core implemented, advanced adapters pending
 
-> Status: **core implemented (2026-11-10)**: shared contracts, provider registry with `stub`/`manual`, SQLite queue, in-process opt-in worker (`WORKER_ENABLED`), sanitized storage paths, routes `POST /api/stages/:id/enqueue`, `GET /api/stages/:id/jobs`, `GET /api/jobs/:id`. **Not implemented**: real `external_api`/`local_cli` adapters, ffmpeg detection/usage, Piper/Whisper, provider-config UI, media-import UI, publishing, separate-process worker. No Docker/Redis/Postgres/n8n/ComfyUI/Whisper/Piper/AI models installed. Requires explicit user approval before adding providers or installing tools.
+> Status: **core + provider-config UI implemented (2026-11-10)**: shared contracts, provider registry with `stub`/`manual`, SQLite queue, in-process opt-in worker (`WORKER_ENABLED`), sanitized storage paths, routes `POST /api/stages/:id/enqueue`, `GET /api/stages/:id/jobs`, `GET /api/jobs/:id`, `GET/PUT/DELETE /api/provider-configs`, dashboard page `/providers` (global/project scope), and manual asset registration (`GET/POST/DELETE /api/episodes/:episodeId/assets` + episode **Assets** panel). **Not implemented**: real `external_api`/`local_cli` adapters, ffmpeg detection/usage, Piper/Whisper, file uploads/browser picker, publishing, separate-process worker. No Docker/Redis/Postgres/n8n/ComfyUI/Whisper/Piper/AI models installed. Requires explicit user approval before adding providers or installing tools.
 
 ## Goals
 - Plug real providers behind interfaces per pipeline stage, keep low resource usage.
@@ -59,19 +59,20 @@ Concurrency:
 ## 5) Storage & security
 - `StorageService` resolves/creates `storage/episodes/<safeEpisodeId>/<stage>/<safeFilename>`.
 - Reject `..`, absolute paths, null bytes; allowlist extensions per kind; max size checks.
-- Register assets in `assets` table with checksum optional later.
+- **Implemented**: register existing files in `assets` only when they live under `episodes/<episodeId>/`, remain contained in `STORAGE_ROOT`, and exist; size from `stat`, MIME inferred, optional same-episode stage, history events. Checksum optional later.
 - Dashboard never receives secrets; provider config UI stores only non-secret refs/enabled flags.
 
 ## 6) Dashboard additions
-- Provider config panel per project/stage (kind/enabled/timeout/attempts, no secrets).
+- **Implemented**: provider config panel per project/stage (kind/enabled/timeout/attempts, no secrets) at `/providers`, backed by `/api/provider-configs`.
 - Job status/log tail (from `pipeline_jobs`/events), retry/cancel safe actions.
-- Asset list/preview (small files only; never load full large video into memory unnecessarily).
+- **Implemented**: asset list/register/delete in the episode detail (kind, stage, relative path, MIME, size). Preview is still pending; never load full large video into memory unnecessarily.
 
 ## 7) Tests required before calling ready
 - Registry resolves stub fallback; config validation rejects secrets/invalid paths.
 - Queue lease prevents duplicate processing; retry/backoff/idempotency key stable.
 - Concurrency cap = 1 for heavy lane (mock providers with delays).
 - Path traversal/sanitization blocked.
+- Assets: prefix `episodes/<id>/` enforced, missing files/outside-root/backslash paths rejected, foreign stage rejected, MIME inferred, delete scoped to the episode.
 - Existing Fase 1 tests remain green.
 
 ## Decisions needed from user (blockers)

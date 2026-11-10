@@ -31,14 +31,20 @@ export function getProviderConfig(
   return fallback ? map(fallback) : null;
 }
 
-export function listProviderConfigs(db: Db, projectId?: string | null): StageProviderConfig[] {
-  if (projectId) {
+export function listProviderConfigs(
+  db: Db,
+  projectId: string | null,
+): StageProviderConfig[] {
+  if (projectId === null) {
     return db
-      .prepare("SELECT * FROM provider_configs WHERE project_id=? ORDER BY stage_type")
-      .all(projectId)
+      .prepare("SELECT * FROM provider_configs WHERE project_id IS NULL ORDER BY stage_type")
+      .all()
       .map(map);
   }
-  return db.prepare("SELECT * FROM provider_configs ORDER BY stage_type").all().map(map);
+  return db
+    .prepare("SELECT * FROM provider_configs WHERE project_id=? ORDER BY stage_type")
+    .all(projectId)
+    .map(map);
 }
 
 export function upsertProviderConfig(
@@ -87,4 +93,20 @@ export function upsertProviderConfig(
     );
   }
   return getProviderConfig(db, projectId, config.stageType)!;
+}
+
+export function deleteProviderConfig(
+  db: Db,
+  projectId: string | null,
+  stageType: PipelineStageType,
+): boolean {
+  const res =
+    projectId === null
+      ? db
+          .prepare("DELETE FROM provider_configs WHERE project_id IS NULL AND stage_type=?")
+          .run(stageType)
+      : db
+          .prepare("DELETE FROM provider_configs WHERE project_id=? AND stage_type=?")
+          .run(projectId, stageType);
+  return res.changes > 0;
 }

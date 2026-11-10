@@ -32,7 +32,7 @@ npm run build
 
 ## Verified results (this environment)
 - `shared` build: OK.
-- `api` typecheck: OK. `api` tests (Vitest+Supertest): **8 files, 32 passed** (Fase 1 + migrations, env/dotenv, queue/worker, cancellation, guards, heavy concurrency).
+- `api` typecheck: OK. `api` tests (Vitest+Supertest): **10 files, 40 passed** (Fase 1 + migrations, env/dotenv, queue/worker, cancellation, guards, heavy concurrency, provider configs, assets).
 - `dashboard` build (tsc + vite): OK (bundle size warning only).
 
 ## Manual smoke checklist
@@ -42,6 +42,8 @@ npm run build
 4. `Ejecutar stub` on a stage -> WAITING_APPROVAL, history updates.
 5. Approve -> COMPLETED; Reject -> FAILED then Retry -> PENDING; Cancel works from allowed states.
 6. Progress bar/home indicators update; restart API and confirm data persists (SQLite `storage/reelengine.db`).
+7. Open `Proveedores`: switch Global/project scope, edit a stage (kind/timeout/attempts), save, verify the row; for a project override use Restablecer and confirm it inherits global again.
+8. Assets: place a real file at `storage/episodes/<episodeId>/script/hello.txt`, open the episode detail, `Importar asset` with the relative path, verify MIME/size and history, then `Eliminar` it. Expect 400 for missing files, paths outside `episodes/<episodeId>/` or another episode's stage.
 
 ## Notes / constraints
 - API bound to localhost; no secrets in frontend/repo.

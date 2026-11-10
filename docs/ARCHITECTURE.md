@@ -28,10 +28,11 @@ ReelEngine/
 - Queue worker is **disabled by default**; enable with `WORKER_ENABLED=true` (`WORKER_POLL_MS`, `WORKER_LEASE_MS`, `WORKER_CONCURRENCY=1`). It runs in the API process (option A).
 
 ## Provider interfaces & queue (Fase 2 core)
-- `IStageProvider` per `stage_type` with `ProviderRegistry`; configured via `provider_configs`, fallback to `stub`. `manual` is available; `external_api`/`local_cli` are reserved.
+- `IStageProvider` per `stage_type` with `ProviderRegistry`; configured via `provider_configs` (global or per-project, edited through `/api/provider-configs` and the `/providers` page), fallback to `stub`. `manual` is available; `external_api`/`local_cli` are reserved.
 - Jobs persist in `job_queue` with idempotency keys and atomic leases. `QueueWorker.tickOnce()` leases at most one job per tick (concurrency 1), enforces timeouts via `AbortSignal`, retries with backoff and cancels cooperatively.
 - Provider output is validated (`jobResultSchema`); stage/episode statuses are synced through the existing state machine.
 - Real providers must produce assets under `storage/` via `StorageService` (sanitized, contained), while reusing the same approval/retry model. One heavy render at a time when render is added.
+- Manual asset import registers existing files only: `GET/POST/DELETE /api/episodes/:episodeId/assets` validates the `episodes/<episodeId>/` prefix, containment in `STORAGE_ROOT`, file existence, and an optional stage belonging to the same episode. MIME is inferred, size read from disk, and `asset.imported`/`asset.deleted` history events are recorded. No uploads through the browser.
 
 ## Security
 - Localhost bind only; no API keys in frontend.

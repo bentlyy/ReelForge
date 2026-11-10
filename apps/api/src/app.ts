@@ -9,10 +9,12 @@ import { rateLimit } from "./middleware/rateLimit.js";
 import { healthRouter } from "./routes/health.js";
 import { projectsRouter } from "./routes/projects.js";
 import { episodesRouter } from "./routes/episodes.js";
+import { assetsRouter } from "./routes/assets.js";
 import { stagesRouter } from "./routes/stages.js";
 import { approvalsRouter } from "./routes/approvals.js";
 import { historyRouter } from "./routes/history.js";
 import { jobsRouter } from "./routes/jobs.js";
+import { providerConfigsRouter } from "./routes/providerConfigs.js";
 
 export function createApp(env: Env, db: Db) {
   const logger = createLogger(env);
@@ -25,11 +27,13 @@ export function createApp(env: Env, db: Db) {
 
   app.use("/api", healthRouter);
   app.use("/api/projects", projectsRouter(db));
+  app.use("/api/episodes/:episodeId/assets", assetsRouter(db, env.storageRoot));
   app.use("/api/episodes", episodesRouter(db));
   app.use("/api/stages", stagesRouter(db));
   app.use("/api/approvals", approvalsRouter(db));
   app.use("/api/history", historyRouter(db));
   app.use("/api/jobs", jobsRouter(db));
+  app.use("/api/provider-configs", providerConfigsRouter(db));
 
   app.use(notFoundHandler);
   app.use(errorHandler(logger));
