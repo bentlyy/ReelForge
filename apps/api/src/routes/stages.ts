@@ -4,6 +4,7 @@ import { validateBody } from "../middleware/validate.js";
 import { stageActionSchema, idParamSchema } from "@reel-engine/shared";
 import * as stagesRepo from "../repositories/stages.js";
 import * as pipeline from "../services/pipeline.js";
+import * as queueSvc from "../services/jobQueueService.js";
 import { badRequest, notFound } from "../lib/errors.js";
 
 export function stagesRouter(db: Db) {
@@ -28,6 +29,14 @@ export function stagesRouter(db: Db) {
   r.post("/:id/run-stub", (req, res, next) => {
     const p = idParamSchema.safeParse(req.params); if (!p.success) return next(badRequest("Invalid id"));
     try { res.json({ data: pipeline.runStubStage(db, p.data.id).stage }); } catch (e) { next(e); }
+  });
+  r.post("/:id/enqueue", (req, res, next) => {
+    const p = idParamSchema.safeParse(req.params); if (!p.success) return next(badRequest("Invalid id"));
+    try { res.status(202).json({ data: queueSvc.enqueueStage(db, p.data.id) }); } catch (e) { next(e); }
+  });
+  r.get("/:id/jobs", (req, res, next) => {
+    const p = idParamSchema.safeParse(req.params); if (!p.success) return next(badRequest("Invalid id"));
+    try { res.json({ data: queueSvc.listStageJobs(db, p.data.id) }); } catch (e) { next(e); }
   });
   return r;
 }

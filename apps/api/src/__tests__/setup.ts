@@ -24,7 +24,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   _resetRateLimitForTests();
-  db.exec(`DELETE FROM activity_events; DELETE FROM assets; DELETE FROM approvals; DELETE FROM pipeline_jobs; DELETE FROM pipeline_stages; DELETE FROM episodes; DELETE FROM projects;`);
+  db.exec(`DELETE FROM activity_events; DELETE FROM assets; DELETE FROM approvals; DELETE FROM job_queue; DELETE FROM pipeline_jobs; DELETE FROM pipeline_stages; DELETE FROM episodes; DELETE FROM provider_configs; DELETE FROM projects;`);
 });
 
 afterAll(() => {

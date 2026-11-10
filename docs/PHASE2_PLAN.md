@@ -1,6 +1,6 @@
-# Phase 2 Plan (detailed) — NOT implemented
+# Phase 2 Plan (detailed) — core implemented, advanced adapters pending
 
-> Status: **planning only**. No image/voice/subtitle/FFmpeg/YouTube generation implemented. No Docker/Redis/Postgres/n8n/ComfyUI/Whisper/Piper/AI models installed. Requires explicit user approval before adding providers or installing tools.
+> Status: **core implemented (2026-11-10)**: shared contracts, provider registry with `stub`/`manual`, SQLite queue, in-process opt-in worker (`WORKER_ENABLED`), sanitized storage paths, routes `POST /api/stages/:id/enqueue`, `GET /api/stages/:id/jobs`, `GET /api/jobs/:id`. **Not implemented**: real `external_api`/`local_cli` adapters, ffmpeg detection/usage, Piper/Whisper, provider-config UI, media-import UI, publishing, separate-process worker. No Docker/Redis/Postgres/n8n/ComfyUI/Whisper/Piper/AI models installed. Requires explicit user approval before adding providers or installing tools.
 
 ## Goals
 - Plug real providers behind interfaces per pipeline stage, keep low resource usage.

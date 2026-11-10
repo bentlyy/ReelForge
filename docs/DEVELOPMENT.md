@@ -14,10 +14,14 @@ npm run build -w @reel-engine/shared
 
 ## Run
 ```powershell
-npm run dev:api        # http://127.0.0.1:4000
+npm run dev:api        # http://127.0.0.1:4000 (loads repo .env)
 npm run dev:dashboard  # http://localhost:5173 (/api proxied)
 ```
-Run in separate terminals.
+Run in separate terminals. Production build uses the same migrations and env rules:
+```powershell
+npm run build
+npm start -w @reel-engine/api   # node dist/server.js
+```
 
 ## Test / typecheck / build
 ```powershell
@@ -28,7 +32,7 @@ npm run build
 
 ## Verified results (this environment)
 - `shared` build: OK.
-- `api` typecheck: OK. `api` tests (Vitest+Supertest): **5 files, 11 passed** (projects create/edit, episodes create/edit+stages, pipeline transitions/approvals/retry + invalid 409, validation/errors/health, SQLite persistence across reopen).
+- `api` typecheck: OK. `api` tests (Vitest+Supertest): **8 files, 32 passed** (Fase 1 + migrations, env/dotenv, queue/worker, cancellation, guards, heavy concurrency).
 - `dashboard` build (tsc + vite): OK (bundle size warning only).
 
 ## Manual smoke checklist

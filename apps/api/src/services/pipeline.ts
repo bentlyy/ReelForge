@@ -4,7 +4,8 @@ import * as stagesRepo from "../repositories/stages.js";
 import * as approvalsRepo from "../repositories/approvals.js";
 import * as historyRepo from "../repositories/history.js";
 import * as episodesRepo from "../repositories/episodes.js";
-import { badRequest, conflict, notFound } from "../lib/errors.js";
+import * as jobQueue from "../repositories/jobQueue.js";
+import { conflict, notFound } from "../lib/errors.js";
 import { nowIso } from "../lib/id.js";
 
 type Action = "start" | "complete" | "approve" | "reject" | "cancel" | "retry";
@@ -58,8 +59,9 @@ export function applyStageAction(db: Db, stageId: string, action: Action, note: 
       stagesRepo.createJob(db, stageId, "FAILED", Math.max(1, attempt), note || "Rejected");
       historyRepo.addEvent(db, { episodeId: stage.episodeId, eventType: "stage.rejected", message: `Stage ${stage.stageType} rejected`, metadata: { stageId } });
     } else if (action === "cancel") {
+      const cancelledJobs = jobQueue.cancelActiveByStage(db, stageId);
       stagesRepo.updateStage(db, stageId, { status: "CANCELLED", note });
-      historyRepo.addEvent(db, { episodeId: stage.episodeId, eventType: "stage.cancelled", message: `Stage ${stage.stageType} cancelled`, metadata: { stageId } });
+      historyRepo.addEvent(db, { episodeId: stage.episodeId, eventType: "stage.cancelled", message: `Stage ${stage.stageType} cancelled`, metadata: { stageId, cancelledJobs } });
     } else if (action === "retry") {
       stagesRepo.updateStage(db, stageId, { status: "PENDING", note, completedAt: null });
       historyRepo.addEvent(db, { episodeId: stage.episodeId, eventType: "stage.retry", message: `Stage ${stage.stageType} set to pending for retry`, metadata: { stageId } });

@@ -5,9 +5,9 @@
 > Repo: `https://github.com/bentlyy/ReelForge.git` (branch `main`, tracking `origin/main`).
 
 ## Estado actual
-**Fase 1: base implementada y verificada (backend/tests/build).** Fase 2 **solo planificada** (`docs/PHASE2_PLAN.md`), no implementada.
-- Commits relevantes: `8e4ba4e` (Fase 1 foundation), `a483589` (ignore/untrack `*.tsbuildinfo`), `f48b053` (plan Fase 2).
-- **Pendiente del usuario:** smoke manual UI (checklist `docs/DEVELOPMENT.md`), ajuste Fase 1 (detalle no especificado), decisiones Fase 2 (worker A/B, proveedor por etapa, uso de ffmpeg existente/instalaciones futuras, manejo de secrets).
+**Fase 1 completa y verificada.** **Fase 2 (núcleo) implementada**: contratos, provider registry, cola SQLite, worker in-process opt-in y proveedores `stub`/`manual`; **sin proveedores reales ni instalaciones**.
+- Commits relevantes: `8e4ba4e` (Fase 1 foundation), `a483589` (tsbuildinfo), `f48b053` (plan Fase 2), `9fa30d6` (fix BOM + smoke).
+- **Pendiente del usuario:** verificación visual/clics UI, ajuste Fase 1 (detalle no especificado).
 
 ## Decisiones confirmadas
 - **D1=A**: `engines.node >=24` en `package.json`. *Entorno detectado al implementar*: Node **v22.15.0**, npm 11.21.1, git 2.47.1 → apareció `EBADENGINE`; recomendado actualizar a Node 24 LTS y reinstalar.
@@ -37,7 +37,7 @@ config/ docs/ .env.example
 
 ## Verificación ejecutada
 - `npm run build -w @reel-engine/shared` — OK.
-- `npm run test -w @reel-engine/api` — **5 archivos, 11 tests passed** (proyectos CRUD, episodios+etapas, transiciones/aprobaciones/retry/409, validación/errores/health, persistencia SQLite tras reabrir).
+- `npm run test -w @reel-engine/api` — **8 archivos, 32 tests passed** (Fase 1 + Fase 2: migraciones, env/dotenv, cola/worker, cancelación, guardas, concurrencia pesada).
 - `npm run typecheck -w @reel-engine/api` — OK.
 - `npm run build -w @reel-engine/dashboard` — OK (warning bundle >500kB, no error).
 
@@ -53,7 +53,7 @@ config/ docs/ .env.example
 - Node 24 real en máquina del usuario (hoy v22.15.0 → EBADENGINE).
 
 ## No implementado (intencional)
-Generación real de imágenes/voz/subtítulos, FFmpeg, Whisper, Piper, publicación YouTube, proveedores externos configurados, worker pesado de render (diseño: 1 render a la vez futuro). No cargar audiovisuales completos en memoria.
+Generación real de imágenes/voz/subtítulos, FFmpeg, Whisper, Piper, publicación YouTube, proveedores externos configurados, render real (el slot pesado=1 ya se aplica a las etapas heavy). No cargar audiovisuales completos en memoria.
 
 ## Comandos útiles
 ```powershell
@@ -68,12 +68,21 @@ npm run typecheck
 npm run build
 ```
 
-## Plan Fase 2 (solo planificado, aprobado para diseñar; no implementar generación real aún)
-- Contratos/provider interfaces por etapa (`IStageProvider`, registry, config por proyecto/etapa) en `shared`/`api`.
-- Cola persistida en SQLite + worker controlado (in-process opcional/proceso separado), **concurrencia pesada = 1**, timeouts, cancelación cooperativa, reintentos idempotentes.
-- Adapters futuros (decidir/aprobar): script/scene manual o API externa aprobada; voz/subtítulos/imagen externos o CLI local **solo con aprobación e instalación explícita**; FFmpeg si está disponible, 1 a la vez.
-- Assets en `storage/` con rutas saneadas (sin path traversal), registro en DB; UI config/logs/assets (sin keys en front).
-- **Decisiones previas Fase 2**: proveedor por etapa, si se instala FFmpeg/Piper/Whisper, worker in-process vs separado.
+## Fase 2 — núcleo implementado (2026-11-10)
+- **Shared**: `constants/providers.ts`, `schemas/provider.ts` (estricto: rechaza claves secretas; `safeRelativePath`), `types/jobs.ts`.
+- **DB**: migraciones en `apps/api/migrations/` (assets de paquete resueltos por módulo → válidos en `src` y `dist`, con fail-fast si faltan): `001_init.sql`, `002_pipeline_queue.sql` (`provider_configs`, `job_queue` con índices + `idempotency_key UNIQUE`).
+- **API**: `providers/` (`IStageProvider`, `StubStageProvider`, `ManualStageProvider`, `ProviderRegistry` con fallback a stub), `repositories/providerConfigs.ts`, `repositories/jobQueue.ts` (enqueue/lease/complete/fail/cancel con guardas de estado), `worker/queueWorker.ts` (in-process opt-in; concurrencia configurable con **máximo 1 etapa pesada**; timeout por etapa desde config con `AbortSignal`; backoff 30s/2m/10m; valida `JobResult`; descarta resultados de jobs cancelados), `lib/storage.ts` (rutas saneadas anti path-traversal).
+- **Cola**: enqueue solo desde `PENDING`/`FAILED`; idempotencia por `stageId:status:updatedAt`; cancelar etapa cancela su job activo; `FAILED` reportado por proveedor cuenta como fallo reintentable; historial con `projectId`.
+- **Rutas nuevas**: `POST /api/stages/:id/enqueue` (202), `GET /api/stages/:id/jobs`, `GET /api/jobs/:id`.
+- **Env**: `WORKER_ENABLED` (default `false`, boolean estricto), `WORKER_POLL_MS`, `WORKER_LEASE_MS`, `WORKER_CONCURRENCY` (default 1), `STORAGE_ROOT`. `.env` se carga desde `apps/api/` y la raíz del repo sin dependencias; `process.env` tiene prioridad; `DB_PATH`/`STORAGE_ROOT` relativos se resuelven contra la raíz del repo. Ver `.env.example`.
+- **Decisiones aplicadas**: worker A in-process opt-in; manual-first + stub; secrets solo en `.env`; ffmpeg solo se detectaría si existe (aún no usado); primer alcance = núcleo.
+- **Verificación**: `npm test` → 8 archivos, **32 tests passed**; `npm run typecheck` y `npm run build` OK.
+- **Smoke en vivo (src y dist)**: `tsx src/server.ts` (puerto 4100) y `node dist/server.js` (4102, `.env` real, DB temporal); en ambos el worker procesó `POST /enqueue` → job `SUCCEEDED`, etapa `WAITING_APPROVAL`; en dist se aplicaron `001+002`; cancelar una etapa dejó su job en `CANCELLED`; sin errores en stderr.
+
+## Fase 2 — no implementado aún
+- Proveedores reales `external_api` / `local_cli`; detección/uso de `ffmpeg`; Piper/Whisper.
+- UI de configuración de proveedores, import manual de assets y visor de logs/cola.
+- Publicación en YouTube/Instagram. Worker en proceso separado (opción B).
 
 ## Docs
-`README.md`, `CONTEXT.md`, `docs/ARCHITECTURE.md`, `docs/DATABASE.md`, `docs/PIPELINE.md`, `docs/DEVELOPMENT.md`, `docs/PHASE2_PLAN.md` (plan, no implementado).
+`README.md`, `CONTEXT.md`, `docs/ARCHITECTURE.md`, `docs/DATABASE.md`, `docs/PIPELINE.md`, `docs/DEVELOPMENT.md`, `docs/PHASE2_PLAN.md`.

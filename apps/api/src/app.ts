@@ -12,6 +12,7 @@ import { episodesRouter } from "./routes/episodes.js";
 import { stagesRouter } from "./routes/stages.js";
 import { approvalsRouter } from "./routes/approvals.js";
 import { historyRouter } from "./routes/history.js";
+import { jobsRouter } from "./routes/jobs.js";
 
 export function createApp(env: Env, db: Db) {
   const logger = createLogger(env);
@@ -28,6 +29,7 @@ export function createApp(env: Env, db: Db) {
   app.use("/api/stages", stagesRouter(db));
   app.use("/api/approvals", approvalsRouter(db));
   app.use("/api/history", historyRouter(db));
+  app.use("/api/jobs", jobsRouter(db));
 
   app.use(notFoundHandler);
   app.use(errorHandler(logger));
