@@ -5,8 +5,8 @@
 > Repo: `https://github.com/bentlyy/ReelForge.git` (branch `main`, tracking `origin/main`).
 
 ## Estado actual
-**Fase 1 completa y verificada.** **Fase 2 (núcleo) implementada**: contratos, provider registry, cola SQLite, worker in-process opt-in, proveedores `stub`/`manual` y UI de configuración de proveedores (global/proyecto) e import manual de assets; **sin proveedores reales ni instalaciones**.
-- Commits relevantes: `8e4ba4e` (Fase 1 foundation), `a483589` (tsbuildinfo), `f48b053` (plan Fase 2), `9fa30d6` (fix BOM + smoke), `068d4e3` (Fase 2 núcleo).
+**Fase 1 completa y verificada.** **Fase 2 (núcleo) implementada**: contratos, provider registry, cola SQLite, worker in-process opt-in, proveedores `stub`/`manual`, UI de configuración de proveedores (global/proyecto), import manual de assets y panel de cola/logs por etapa; **sin proveedores reales ni instalaciones**.
+- Commits relevantes: `8e4ba4e` (Fase 1 foundation), `a483589` (tsbuildinfo), `f48b053` (plan Fase 2), `9fa30d6` (fix BOM + smoke), `068d4e3` (Fase 2 núcleo), `4467a2e` (UI proveedores + assets), `11197fb` (cola/logs por etapa).
 - **Pendiente del usuario:** verificación visual/clics UI, ajuste Fase 1 (detalle no especificado).
 
 ## Decisiones confirmadas
@@ -33,24 +33,27 @@ config/ docs/ .env.example
 - API REST: proyectos, episodios, etapas, aprobaciones, historial, health. Validación Zod, errores centralizados, Pino/pino-http, JSON 256kb, rate limit en memoria, bind **127.0.0.1**.
 - SQLite: migración `001_init.sql` + `schema_migrations`; tablas `projects, episodes, pipeline_stages, pipeline_jobs, approvals, assets, activity_events`; `WAL`, `foreign_keys=ON`, `busy_timeout`, transacciones.
 - Pipeline: estados `PENDING,RUNNING,WAITING_APPROVAL,APPROVED,COMPLETED,FAILED,CANCELLED`; etapas `SCRIPT,SCENE_PLANNING,IMAGE_GENERATION,VOICE_GENERATION,SUBTITLES,ASSEMBLY,FINAL_RENDER`; crear episodio genera 7 etapas; acciones aprobar/rechazar/cancelar/reintentar/start/complete/run-stub con validación de transiciones (409 inválidas), jobs/aprobaciones/historial, sync estado episodio.
-- Dashboard: páginas inicio, proyectos (list/crear/editar), episodios (list/crear/editar), detalle episodio (etapas, estado, progreso, acciones, historial), tema claro/oscuro, nav lateral, responsive, estados vacío/error/carga. TanStack Query (sin polling excesivo).
+- Dashboard: páginas inicio, proyectos (list/crear/editar), episodios (list/crear/editar), detalle episodio (etapas, estado, progreso, acciones, historial, assets, cola/logs por etapa), **Proveedores** (`/providers`), tema claro/oscuro, nav lateral, responsive, estados vacío/error/carga. TanStack Query (sin polling excesivo).
 
 ## Verificación ejecutada
 - `npm run build -w @reel-engine/shared` — OK.
 - `npm run test -w @reel-engine/api` — **10 archivos, 40 tests passed** (Fase 1 + Fase 2: migraciones, env/dotenv, cola/worker, cancelación, guardas, concurrencia pesada, provider configs, assets).
 - `npm run typecheck -w @reel-engine/api` — OK.
-- `npm run build -w @reel-engine/dashboard` — OK (warning bundle >500kB, no error).
+- `npm run build -w @reel-engine/dashboard` — OK (warning bundle ~574kB, no error).
 
 ## Smoke ejecutado (2026-11-10)
 - **Fix BOM**: todo el repo se había guardado con BOM UTF-8; `tsx` no lo tolera y `npm run dev:api` fallaba (`Error parsing package.json`). BOM eliminado de 74 archivos. Tras el fix: `npm test` (11 passed) y `npm run build` OK.
 - **API E2E OK**: health, crear/editar proyecto, crear episodio (7 etapas), `run-stub`→`WAITING_APPROVAL`, approve→COMPLETED, reject→FAILED, retry→PENDING, cancel→CANCELLED, aprobaciones, historial (9 eventos); 409 correcto al rechazar desde PENDING.
 - **UI**: sirve HTML 200 en 5173 y proxy `/api/health` OK. **Clics UI no automatizados** (Chrome sin remote debugging): falta verificación visual manual.
+- **Fase 2 UI/API**: `/providers` y panel de assets renderizados por DOM headless; API en vivo verificó override/reset de proveedor, import/delete de asset y enqueue/listado de job + evento de historial. Detalle en la sección Fase 2.
 
 ## Pendiente / no afirmar listo sin prueba
 - Verificación visual/clics UI (checklist `docs/DEVELOPMENT.md`) — pendiente.
 - Ajuste Fase 1 solicitado por usuario: **detalle no especificado** (confirmar antes de cambiar).
-- Dashboard bundle size warning (optimización opcional).
+- Dashboard bundle size warning (optimización opcional, ~574kB).
 - Node 24 real en máquina del usuario (hoy v22.15.0 → EBADENGINE).
+- Visor global de cola/logs entre episodios (hoy el panel es por etapa).
+- Push a `origin/main` (commits locales pendientes).
 
 ## No implementado (intencional)
 Generación real de imágenes/voz/subtítulos, FFmpeg, Whisper, Piper, publicación YouTube, proveedores externos configurados, render real (el slot pesado=1 ya se aplica a las etapas heavy). No cargar audiovisuales completos en memoria.
