@@ -1,4 +1,4 @@
-﻿export const PIPELINE_STAGE_TYPES = [
+export const PIPELINE_STAGE_TYPES = [
   "SCRIPT",
   "SCENE_PLANNING",
   "IMAGE_GENERATION",

@@ -1,4 +1,4 @@
-﻿import type { PipelineStageType, PipelineStatus, ApprovalDecision } from "../constants/pipeline.js";
+import type { PipelineStageType, PipelineStatus, ApprovalDecision } from "../constants/pipeline.js";
 
 export interface Project {
   id: string;

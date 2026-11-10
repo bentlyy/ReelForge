@@ -1,4 +1,4 @@
-﻿# Development
+# Development
 
 ## Prerequisites
 - Node.js **24 LTS** (`engines >=24`). (If on Node 22, upgrade; EBADENGINE may appear.)

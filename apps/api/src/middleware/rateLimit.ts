@@ -1,4 +1,4 @@
-﻿import type { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();

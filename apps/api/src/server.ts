@@ -1,4 +1,4 @@
-﻿import { loadEnv } from "./env.js";
+import { loadEnv } from "./env.js";
 import { openDb } from "./db/connection.js";
 import { migrate } from "./db/migrate.js";
 import { createApp } from "./app.js";

@@ -1,6 +1,6 @@
 # ReelEngine — Contexto de continuidad
 
-> Actualizado: 2026-05-09. Carpeta: `C:\Users\garay\OneDrive\Documentos\Proyectos\11_AutoYoutube\ReelEngine`
+> Actualizado: 2026-11-10. Carpeta: `C:\Users\garay\OneDrive\Documentos\Proyectos\11_AutoYoutube\ReelEngine`
 > Objetivo: motor local para Shorts/Reels/vertical con dashboard web, bajo consumo, servicios externos gratuitos cuando sea posible, **sin modelos pesados**.
 > Repo: `https://github.com/bentlyy/ReelForge.git` (branch `main`, tracking `origin/main`).
 
@@ -41,11 +41,16 @@ config/ docs/ .env.example
 - `npm run typecheck -w @reel-engine/api` — OK.
 - `npm run build -w @reel-engine/dashboard` — OK (warning bundle >500kB, no error).
 
+## Smoke ejecutado (2026-11-10)
+- **Fix BOM**: todo el repo se había guardado con BOM UTF-8; `tsx` no lo tolera y `npm run dev:api` fallaba (`Error parsing package.json`). BOM eliminado de 74 archivos. Tras el fix: `npm test` (11 passed) y `npm run build` OK.
+- **API E2E OK**: health, crear/editar proyecto, crear episodio (7 etapas), `run-stub`→`WAITING_APPROVAL`, approve→COMPLETED, reject→FAILED, retry→PENDING, cancel→CANCELLED, aprobaciones, historial (9 eventos); 409 correcto al rechazar desde PENDING.
+- **UI**: sirve HTML 200 en 5173 y proxy `/api/health` OK. **Clics UI no automatizados** (Chrome sin remote debugging): falta verificación visual manual.
+
 ## Pendiente / no afirmar listo sin prueba
-- **Smoke manual UI+API** (checklist en `docs/DEVELOPMENT.md`) — pendiente.
+- Verificación visual/clics UI (checklist `docs/DEVELOPMENT.md`) — pendiente.
 - Ajuste Fase 1 solicitado por usuario: **detalle no especificado** (confirmar antes de cambiar).
 - Dashboard bundle size warning (optimización opcional).
-- Node 24 real en máquina del usuario.
+- Node 24 real en máquina del usuario (hoy v22.15.0 → EBADENGINE).
 
 ## No implementado (intencional)
 Generación real de imágenes/voz/subtítulos, FFmpeg, Whisper, Piper, publicación YouTube, proveedores externos configurados, worker pesado de render (diseño: 1 render a la vez futuro). No cargar audiovisuales completos en memoria.

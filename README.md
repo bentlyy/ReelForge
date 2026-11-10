@@ -1,4 +1,4 @@
-﻿# Reel Engine (Fase 1)
+# Reel Engine (Fase 1)
 
 Motor local (base) para producir **YouTube Shorts / Instagram Reels / video vertical**, con dashboard web para supervisar etapas de producción. **Fase 1**: fundación sólida (monorepo, API, SQLite, pipeline con estados/aprobaciones stub). **Sin** generación de imágenes, narración, subtítulos, FFmpeg ni publicación YouTube.
 

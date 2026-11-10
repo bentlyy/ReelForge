@@ -1,4 +1,4 @@
-﻿import type { Db } from "../db/connection.js";
+import type { Db } from "../db/connection.js";
 import * as repo from "../repositories/projects.js";
 import * as history from "../repositories/history.js";
 import { notFound } from "../lib/errors.js";

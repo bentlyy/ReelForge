@@ -1,4 +1,4 @@
-﻿import type { Db } from "../db/connection.js";
+import type { Db } from "../db/connection.js";
 import type { ActivityEvent } from "@reel-engine/shared";
 import { newId, nowIso } from "../lib/id.js";
 

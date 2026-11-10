@@ -1,4 +1,4 @@
-﻿import { apiFetch } from "./client";
+import { apiFetch } from "./client";
 import type { Project, Episode, PipelineStage, Approval, ActivityEvent, ApiList, ApiItem } from "@reel-engine/shared";
 
 export const projectsApi = {

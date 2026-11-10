@@ -1,4 +1,4 @@
-﻿import type { Db } from "../db/connection.js";
+import type { Db } from "../db/connection.js";
 import type { PipelineStage, PipelineJob } from "@reel-engine/shared";
 import { PIPELINE_STAGE_ORDER, PIPELINE_STAGE_TYPES, type PipelineStageType } from "@reel-engine/shared";
 import { newId, nowIso } from "../lib/id.js";

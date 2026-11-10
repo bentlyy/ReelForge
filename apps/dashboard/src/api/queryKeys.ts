@@ -1,4 +1,4 @@
-﻿export const qk = {
+export const qk = {
   projects: ["projects"] as const,
   project: (id: string) => ["projects", id] as const,
   episodes: (projectId?: string) => ["episodes", projectId || "all"] as const,

@@ -1,4 +1,4 @@
-﻿import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, Grid, Typography, Stack } from "@mui/material";
 import { PageHeader } from "../components/PageHeader";
 import { projectsApi, episodesApi, pipelineApi } from "../api/resources";

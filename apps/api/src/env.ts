@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 import path from "node:path";
 import fs from "node:fs";
 

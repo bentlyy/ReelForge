@@ -1,4 +1,4 @@
-﻿import Database from "better-sqlite3";
+import Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
 import type { Env } from "../env.js";

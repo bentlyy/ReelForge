@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import type { Db } from "../db/connection.js";
 import { validateBody } from "../middleware/validate.js";
 import { createProjectSchema, updateProjectSchema, idParamSchema } from "@reel-engine/shared";

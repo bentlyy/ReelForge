@@ -1,4 +1,4 @@
-﻿import type { Db } from "../db/connection.js";
+import type { Db } from "../db/connection.js";
 import type { PipelineStatus } from "@reel-engine/shared";
 import * as stagesRepo from "../repositories/stages.js";
 import * as approvalsRepo from "../repositories/approvals.js";

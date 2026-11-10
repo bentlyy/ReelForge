@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import { pinoHttp } from "pino-http";
 import type { Db } from "./db/connection.js";
 import type { Env } from "./env.js";

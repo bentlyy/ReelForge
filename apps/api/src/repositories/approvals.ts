@@ -1,4 +1,4 @@
-﻿import type { Db } from "../db/connection.js";
+import type { Db } from "../db/connection.js";
 import type { Approval } from "@reel-engine/shared";
 import { newId, nowIso } from "../lib/id.js";
 

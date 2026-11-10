@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import type { Db } from "../db/connection.js";
 import { listHistory } from "../repositories/history.js";
 

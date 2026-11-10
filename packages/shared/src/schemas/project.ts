@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 const safeName = z.string().trim().min(1).max(120);
 const safeDesc = z.string().trim().max(2000).optional().default("");

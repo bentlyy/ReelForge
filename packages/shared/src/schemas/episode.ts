@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 const safeTitle = z.string().trim().min(1).max(160);
 const safeText = z.string().trim().max(5000).optional().default("");

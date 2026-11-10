@@ -1,4 +1,4 @@
-﻿# Database (SQLite, Fase 1)
+# Database (SQLite, Fase 1)
 
 Engine: **better-sqlite3**. Pragmas: `journal_mode=WAL`, `foreign_keys=ON`, `synchronous=NORMAL`, `busy_timeout=5000`.
 

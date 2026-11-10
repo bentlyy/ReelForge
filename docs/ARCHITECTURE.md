@@ -1,4 +1,4 @@
-﻿# Architecture (Fase 1)
+# Architecture (Fase 1)
 
 ## Goal
 Local, low-resource foundation for producing vertical videos (YouTube Shorts / Instagram Reels / generic). Fase 1 delivers a controllable dashboard + API + persistent state machine. **No** image/voice/subtitle/FFmpeg/YouTube providers yet.

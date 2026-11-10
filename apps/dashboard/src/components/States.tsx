@@ -1,4 +1,4 @@
-﻿import { Alert, Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Typography } from "@mui/material";
 export function LoadingState({ label="Cargando..." }: { label?: string }) {
   return <Box sx={{ display:"flex", gap:2, alignItems:"center", p:2 }}><CircularProgress size={22}/><Typography>{label}</Typography></Box>;
 }

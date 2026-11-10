@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 export const idParamSchema = z.object({
   id: z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/),

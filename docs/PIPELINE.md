@@ -1,4 +1,4 @@
-﻿# Pipeline (Fase 1)
+# Pipeline (Fase 1)
 
 ## Statuses
 `PENDING, RUNNING, WAITING_APPROVAL, APPROVED, COMPLETED, FAILED, CANCELLED`
